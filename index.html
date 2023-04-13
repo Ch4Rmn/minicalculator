@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Font Awesome -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+rel="stylesheet"
+/>
+<!-- Google Fonts -->
+<link
+href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+rel="stylesheet"
+/>
+<!-- MDB -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.1/mdb.min.css"
+rel="stylesheet"
+/>
+</head>
+<body class="bg-black">
+   <div class="container-md my-5"  id="app">
+    <h1 class="mt-5 text-danger text-center">Mini Fast Calculator</h1>
+            <div class="row my-5 justify-content-center">
+                <div class="col-12">
+                    <div class="card bg-secondary">
+                        <div class="card-body">
+                            <div class="border p-3 text-white rounded mb-3 d-flex justify-content-end align-items-start bg-dark">{{answer}}</div> 
+                            <div class="row">
+                                <div class="form-group col-6 mb-3"><input type="number" v-model="userInput.firstNumber" class="form-control" placeholder="enter first number">
+                                <small v-if="validation.first" class="text-danger">First number is required</small></div>
+                                
+                                <div class="form-group col-6 mb-3"><input type="number" v-model="userInput.secondNumber" placeholder="enter second number" class="form-control">
+                                    <small v-if="validation.second" class="text-danger">Second number is required</small></div>
+
+                                <div class="col-4  ">
+                                    <select aria-label="Default select example" v-model="userInput.operation" class="form-control form-select">
+                                        <option value="">options</option>
+                                        <option value="+">+</option>
+                                        <option value="-">-</option>
+                                        <option value="*">*</option>
+                                        <option value="/">/</option>
+                                    </select>
+                                    <small v-if="validation.operator" class="text-danger">Operator is required</small>
+                                </div>
+
+                                <div class="col-4">
+                                    <button @click="cal()" class="btn btn-primary w-100">calculate</button>
+                                </div>
+
+                                <div class="col-4">
+                                    <button @click="clean()" class="btn btn-danger w-100">Clear</button>
+                                </div>
+                                
+                                <div class="col text-center mt-3 ">
+                                    <button class="btn btn-warning w-100 " @click="save()">Save</button>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-footer mx-3">
+                            <h5 class="text-white">History</h5>
+                            <div class="text-white border-1" v-for="history in histories">
+                                {{history}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+   </div>
+ 
+</body>
+
+<footer class="bg-white d-flex justify-content-center  " style="bottom:0%; left:0%;">
+    <!-- Copyright -->
+    <div class="text-center bg-white p-3">
+      © 2020 Copyright:
+      <a class="text-black" href="https://mdbootstrap.com/">By Lin Htut Kyaw</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+let app = new Vue({
+    el : "#app" ,
+    data : {
+        // userInput
+        userInput:{
+            firstNumber : '',
+            secondNumber : '' ,
+            operation : ''
+        } ,
+
+        // answer show poh
+        answer : 0  ,
+
+        // histories loop for history lay twy pyn htoke poh 
+        histories : [] ,
+
+        // validation check ml. first num twy second num twy mr Empty string ma phit poh
+        validation: {
+            first: false,
+            second:false,
+            operator:false
+        },
+
+        // calculate ma lote pae save ma ya ag 
+        saveStatus : false
+
+    },
+
+     methods : {
+        // calcualate 
+
+         cal(){
+            // validation check ml . first val and sec val false phit poh .....** ma hoke yin true phit pi validation small text twy paw
+            this.validationCheck();
+
+            // validation ma process a kone lote ml 
+            if(!this.validation.first && !this.validation.second && !this.validation.operator){
+            let result = this.operationSystem();
+            // Only result
+            //  this.answer =result;   
+            // this.clear();
+
+            // all items show with result
+            this.answer = `${this.userInput.firstNumber}
+            ${this.userInput.operation}
+            ${this.userInput.secondNumber}
+            = ${result}
+            `;
+             // calculate nate ma saveStatus true phit ma save lo ya 
+             this.saveStatus = true ;
+
+            this.clear();
+
+               
+        }  }, 
+
+        // validation check with userInput 
+        validationCheck(){
+            this.validation.first = this.userInput.firstNumber == ''? true : false;
+            this.validation.second = this.userInput.secondNumber == '' ? true : false ;
+            this.validation.operator = this.userInput.operation == '' ? true : false ; 
+        },
+
+        // cal pi first and sec and operator delete 
+       clear(){
+            this.userInput.firstNumber = '',
+            this.userInput.secondNumber ='', 
+            this.userInput.operation =''
+
+        } , 
+
+        // when click delete , arr lone delete 
+        clean(){
+            this.userInput.firstNumber = '',
+            this.userInput.secondNumber ='', 
+            this.userInput.operation ='' ,
+            this.answer = 0
+            this.saveStatus = false;
+
+        },
+
+        // operation kote poh ..operator a lite 
+        operationSystem(){
+            // Interger chg poh ParseInt ko use 
+            let num1 = parseInt(this.userInput.firstNumber) ; 
+            let num2 = parseInt(this.userInput.secondNumber) ;
+            switch(this.userInput.operation) {
+                case '+' :
+                return num1 + num2 ;
+                 break ;
+                 
+                 case '-' :
+                return num1 - num2 ;
+                 break ;
+                 
+                 case '*' :
+                return num1 * num2 ;
+                 break ;
+                 
+                 case '/' :
+                return num1 / num2 ;
+                 break ;
+                 default :
+                 return "error";
+
+        }} ,
+
+        // save data ml. to history 
+        save(){
+            // saveStatus ka true so ma a lote lote ml if nae sit  
+            if(this.saveStatus){
+            return this.histories.push(this.answer);
+            this.answer = 0 
+            // this.saveStatus = false;
+
+           } 
+        //    save pi yin lae save lo ya nay lo saveStatus ko false so restart cya ta lo phit 
+            
+        }
+
+    }
+})
+</script>
+</html>
